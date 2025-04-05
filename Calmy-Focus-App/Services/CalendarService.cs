@@ -11,84 +11,38 @@ namespace Calmy_Focus_App.Services
 {
     public class CalendarService : ICalendarService
     {
-        private readonly IMongoCollection<Calendar> _calendars;
-        private readonly ILogger<CalendarService> _logger;
-        
-        public CalendarService(IOptions<MongoDBSettings> mongoDBSettings, 
-            ILogger<CalendarService> logger)
-        {
-            _logger = logger;
-        
-            try 
-            {
-                _logger.LogInformation("Initializing CalendarService...");
-            
-                var settings = mongoDBSettings.Value;
-                _logger.LogInformation($"Connecting to: {settings.ConnectionString}");
-                _logger.LogInformation($"Database: {settings.DatabaseName}");
-                _logger.LogInformation($"Collection: {settings.CalendarCollectionName}");
-
-                var client = new MongoClient(settings.ConnectionString);
-                var database = client.GetDatabase(settings.DatabaseName);
-            
-                // This will create the collection if it doesn't exist
-                _calendars = database.GetCollection<Calendar>(
-                    settings.CalendarCollectionName);
-                
-                _logger.LogInformation("CalendarService initialized successfully");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to initialize CalendarService");
-                throw;
-            }
-        }
+        private readonly IMongoCollection<CalendarEvent> _calendarEvents;
 
         public CalendarService(IOptions<MongoDBSettings> mongoDBSettings)
         {
             var client = new MongoClient(mongoDBSettings.Value.ConnectionString);
             var database = client.GetDatabase(mongoDBSettings.Value.DatabaseName);
-            _calendars = database.GetCollection<Calendar>(mongoDBSettings.Value.CalendarCollectionName);
+            _calendarEvents = database.GetCollection<CalendarEvent>(mongoDBSettings.Value.CalendarCollectionName);
         }
-
-        public async Task<List<Calendar>> GetAsync()
+        
+        public async Task<List<CalendarEvent>> GetByDateRangeAsync(DateTime start, DateTime end)
         {
-            return await _calendars.Find(calendar => true).ToListAsync();
-        }
-
-        public async Task<Calendar> GetAsync(string id)
-        {
-            return await _calendars.Find<Calendar>(calendar => calendar.Id == id).FirstOrDefaultAsync();
-        }
-
-        public async Task CreateAsync(Calendar calendar)
-        {
-            calendar.Id = null;
+            var filter = Builders<CalendarEvent>.Filter.And(
+                Builders<CalendarEvent>.Filter.Gte(x => x.Start, start),
+                Builders<CalendarEvent>.Filter.Lte(x => x.End, end)
+            );
     
-            // Explicit insert options
-            var options = new InsertOneOptions { BypassDocumentValidation = false };
-    
-            await _calendars.InsertOneAsync(calendar, options);
-    
-            _logger.LogInformation($"Created event with ID: {calendar.Id}");
-            
+            return await _calendarEvents.Find(filter).ToListAsync();
         }
 
-        public async Task UpdateAsync(string id, Calendar calendarIn)
-        {
-            await _calendars.ReplaceOneAsync(calendar => calendar.Id == id, calendarIn);
-        }
+        public async Task<List<CalendarEvent>> GetAsync() =>
+            await _calendarEvents.Find(_ => true).ToListAsync();
 
-        public async Task RemoveAsync(string id)
-        {
-            await _calendars.DeleteOneAsync(calendarEvent => calendarEvent.Id == id);
-        }
+        public async Task<CalendarEvent?> GetAsync(string id) =>
+            await _calendarEvents.Find(x => x.Id == id).FirstOrDefaultAsync();
 
-        public async Task<List<Calendar>> GetByDateRangeAsync(DateTime start, DateTime end)
-        {
-            return await _calendars.Find(calendarEvent => 
-                    calendarEvent.Start >= start && calendarEvent.End <= end)
-                .ToListAsync();
-        }
+        public async Task CreateAsync(CalendarEvent calendarEvent) =>
+            await _calendarEvents.InsertOneAsync(calendarEvent);
+
+        public async Task UpdateAsync(string id, CalendarEvent calendarEvent) =>
+            await _calendarEvents.ReplaceOneAsync(x => x.Id == id, calendarEvent);
+
+        public async Task RemoveAsync(string id) =>
+            await _calendarEvents.DeleteOneAsync(x => x.Id == id);
     }
 }

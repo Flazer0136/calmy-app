@@ -7,11 +7,11 @@ namespace Calmy_Focus_App.Services
 {
     public interface ICalendarService
     {
-        Task<List<Calendar>> GetAsync();
-        Task<Calendar> GetAsync(string id);
-        Task CreateAsync(Calendar calendar);
-        Task UpdateAsync(string id, Calendar calendar);
+        Task<List<CalendarEvent>> GetAsync();
+        Task<CalendarEvent?> GetAsync(string id);
+        Task CreateAsync(CalendarEvent calendarEvent);
+        Task UpdateAsync(string id, CalendarEvent calendarEvent);
         Task RemoveAsync(string id);
-        Task<List<Calendar>> GetByDateRangeAsync(DateTime start, DateTime end);
+        Task<List<CalendarEvent>> GetByDateRangeAsync(DateTime start, DateTime end);
     }
 }

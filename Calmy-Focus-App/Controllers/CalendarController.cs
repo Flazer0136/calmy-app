@@ -22,7 +22,7 @@ namespace Calmy_Focus_App.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Calendar calendar)
+        public async Task<IActionResult> Create([FromBody] CalendarEvent calendarEvent)
         {
             _logger.LogInformation("Creating calendar event");
             ModelState.Remove("Id");
@@ -35,10 +35,10 @@ namespace Calmy_Focus_App.Controllers
 
             try
             {
-                await _calendarService.CreateAsync(calendar);
+                await _calendarService.CreateAsync(calendarEvent);
                 return Json(new { 
                     success = true, 
-                    id = calendar.Id
+                    id = calendarEvent.Id
                 });
             }
             catch (Exception ex)
@@ -52,10 +52,29 @@ namespace Calmy_Focus_App.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         public async Task<IActionResult> Delete(string id)
         {
-            await _calendarService.RemoveAsync(id);
-            return NoContent();
+            try
+            {
+                await _calendarService.RemoveAsync(id);
+                return Ok(new { success = true });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { error = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Delete error");
+                return StatusCode(500, new { error = "Internal server error" });
+            }
         }
 
         public async Task<IActionResult> Index()
@@ -65,14 +84,14 @@ namespace Calmy_Focus_App.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(string id, Calendar calendar)
+        public async Task<IActionResult> Update(string id, CalendarEvent calendarEvent)
         {
             if (ModelState.IsValid)
             {
-                await _calendarService.UpdateAsync(id, calendar);
+                await _calendarService.UpdateAsync(id, calendarEvent);
                 return RedirectToAction("Index");
             }
-            return View(calendar);
+            return View(calendarEvent);
         }
 
         [HttpGet]

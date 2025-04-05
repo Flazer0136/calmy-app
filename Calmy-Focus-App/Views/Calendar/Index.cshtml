@@ -1,4 +1,4 @@
-@model IEnumerable<Calmy_Focus_App.Models.Calendar>
+@model IEnumerable<Calmy_Focus_App.Models.CalendarEvent>
 
 <div class="container mt-4">
     <h1>Calendar Events</h1>
@@ -39,23 +39,12 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <h5>@evt.Title</h5>
-                        <p class="mb-1">
-                            @evt.Start.ToString("MMM dd, yyyy h:mm tt")
-                            @if (evt.End != default(DateTime))
-                            {
-                                <span> - @evt.End.ToString("MMM dd, yyyy h:mm tt")</span>
-                            }
-                        </p>
-                        @if (!string.IsNullOrEmpty(evt.Description))
-                        {
-                            <p class="text-muted">@evt.Description</p>
-                        }
+                        <p>@evt.Start.ToString("MMM dd, yyyy h:mm tt")</p>
                     </div>
-                    <div>
-                        <button class="btn btn-sm btn-outline-danger delete-event" data-id="@evt.Id">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
+                    <button class="btn btn-sm btn-outline-danger delete-event" 
+                            data-id="@evt.Id">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div>
             </div>
         }
@@ -112,23 +101,54 @@
             });
 
             // Delete event
-            $(document).on('click', '.delete-event', function() {
-                const eventId = $(this).data('id');
-                const $eventCard = $(this).closest('.event-card');
+            $(document).on('click', '.delete-event', async function() {
+                const $btn = $(this);
+                const eventId = $btn.data('id');
+                const $card = $btn.closest('.event-card');
 
-                if (confirm('Are you sure you want to delete this event?')) {
-                    $.ajax({
-                        url: '/Calendar/Delete/' + eventId,
+                if (!confirm('Permanently delete this event?')) return;
+
+                $btn.prop('disabled', true)
+                    .html('<i class="fas fa-spinner fa-spin"></i>');
+
+                try {
+                    const response = await $.ajax({
+                        url: `/Calendar/Delete/${eventId}`,
                         type: 'DELETE',
-                        success: function() {
-                            $eventCard.remove();
-                        },
-                        error: function() {
-                            alert('Error deleting event');
-                        }
+                        contentType: 'application/json',
+                        dataType: 'json'
                     });
+
+                    if (response.success) {
+                        $card.fadeOut(400, () => $card.remove());
+                    } else {
+                        showToast(`Error: ${response.error || 'Unknown error'}`, 'error');
+                        $btn.prop('disabled', false)
+                            .html('<i class="fas fa-trash"></i>');
+                    }
+                } catch (error) {
+                    const errMsg = error.responseJSON?.error ||
+                        error.statusText ||
+                        'Connection failed';
+
+                    console.error('Delete error:', {
+                        status: error.status,
+                        response: error.responseJSON,
+                        eventId: eventId
+                    });
+
+                    showToast(`Delete failed: ${errMsg}`, 'error');
+                    $btn.prop('disabled', false)
+                        .html('<i class="fas fa-trash"></i>');
                 }
             });
+
+            // Helper function for user feedback
+            function showToast(message, type = 'success') {
+                const toast = `<div class="toast ${type}">${message}</div>`;
+                $('body').append(toast);
+                setTimeout(() => $('.toast').fadeOut(), 3000);
+            }
         });
     </script>
 
