@@ -14,9 +14,7 @@ namespace Calmy_Focus_App.Models
         public string Description { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
-        
         public bool AllDay { get; set; } = false;
-        
         public string Color { get; set; } = "#3a87ad";
     }
 }

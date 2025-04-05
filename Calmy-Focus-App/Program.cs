@@ -17,6 +17,9 @@ builder.Services.Configure<MongoDBSettings>(
 // Register your existing services.
 builder.Services.AddSingleton<INotesService, NotesService>();
 builder.Services.AddSingleton<IHabitService, HabitService>();
+builder.Services.AddSingleton<ICalendarService, CalendarService>();
+builder.Services.AddSingleton<IMeditationService, MeditationService>();
+
 
 // Register additional services for authentication.
 // (Implementations for IUserService and UserService will be provided in later steps.)

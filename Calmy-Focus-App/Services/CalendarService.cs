@@ -44,6 +44,5 @@ namespace Calmy_Focus_App.Services
 
         public async Task RemoveAsync(string id) =>
             await _calendarEvents.DeleteOneAsync(x => x.Id == id);
-        
     }
 }
