@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Calmy_Focus_App.Models
 {
-    public class Calendar
+    public class CalendarEvent
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
