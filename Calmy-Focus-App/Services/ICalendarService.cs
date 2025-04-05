@@ -13,5 +13,6 @@ namespace Calmy_Focus_App.Services
         Task UpdateAsync(string id, CalendarEvent calendarEvent);
         Task RemoveAsync(string id);
         Task<List<CalendarEvent>> GetByDateRangeAsync(DateTime start, DateTime end);
+        
     }
 }

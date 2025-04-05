@@ -99,6 +99,7 @@ namespace Calmy_Focus_App.Controllers
         {
             var events = await _calendarService.GetByDateRangeAsync(start, end);
             return Json(events);
+            
         }
     }
 }
