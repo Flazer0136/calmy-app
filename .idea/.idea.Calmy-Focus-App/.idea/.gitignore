@@ -2,8 +2,8 @@
 /shelf/
 /workspace.xml
 # Rider ignored files
-/.idea.Calmy-Focus-App.iml
 /modules.xml
+/.idea.Calmy-Focus-App.iml
 /projectSettingsUpdater.xml
 /contentModel.xml
 # Editor-based HTTP Client requests
