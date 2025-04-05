@@ -1,88 +1,165 @@
+/* Base Settings */
 html {
-  font-size: 14px;
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
+/* Body: Dark Theme */
 body {
-  margin-bottom: 60px;
+    margin: 0;
+    padding: 0;
+    background-color: #121212;
+    color: #e0e0e0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
 }
+
+/* Container */
 .container {
-    background-color: #f1f1f1;
-    padding: 20px;
+    max-width: 420px;
+    margin: 80px auto;
+    padding: 30px;
+    background-color: #1e1e24;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     border-radius: 8px;
 }
 
-.form-control {
-    border-radius: 5px;
-    background-color: #fff9e6;
-    border: 1px solid #f9a602;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-    .form-control:focus {
-        background-color: #f5f3eb;
-        box-shadow: 0 0 10px rgba(255, 123, 0, 0.6);
-    }
-
-.btn-primary {
-    background-color: #f9a602;
-    border-color: #ff7b00;
-    border-radius: 20px;
-    padding: 10px 20px;
-    font-weight: bold;
-    color: white;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-    .btn-primary:hover {
-        background-color: #ff7b00;
-        border-color: #f9a602;
-    }
-
+/* Card styling */
 .card {
     border: none;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    background-color: #fdf3d5;
+    background: transparent;
 }
 
-    .card:hover {
-        transform: scale(1.02);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    }
+.card-body {
+    padding: 0;
+}
 
+/* Card Title */
 .card-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #333;
+    font-size: 1.8rem;
+    font-weight: 300;
+    text-align: center;
+    margin-bottom: 28px;
+    color: #e0e0e0;
 }
 
-.card-text {
-    font-size: 1.1rem;
-    color: #555;
+/* Form Groups */
+.form-group {
+    margin-bottom: 24px;
 }
 
-.fa-pen-to-square, .fa-trash-can {
-    font-size: 1.2rem;
-    transition: opacity 0.3s ease;
+/* Labels */
+label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #a0a0a0;
 }
 
-    .fa-pen-to-square:hover, .fa-trash-can:hover {
-        opacity: 0.7;
-    }
+/* Form Controls */
+.form-control {
+    width: 100%;
+    padding: 8px 4px;
+    font-size: 1rem;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #404040;
+    border-radius: 0;
+    color: #e0e0e0;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #808080;
+    box-shadow: none;
+}
+
+.form-control::placeholder {
+    color: #505050;
+}
+
+/* Button styling */
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    background-color: #e0e0e0;
+    color: #121212;
+    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 16px;
+}
+
+.btn-primary:hover {
+    background-color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+/* Link styling */
+a {
+    color: #808080;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: #e0e0e0;
+}
+
+/* Timer specific styles */
+#timer {
+    font-size: 3rem;
+    text-align: center;
+    font-weight: 300;
+    margin: 1.5rem 0;
+    color: #e0e0e0;
+}
+
+/* Timer buttons container */
+.timer-controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+/* Timer buttons */
+.btn-timer {
+    padding: 10px 0;
+    width: 100px;
+    background-color: transparent;
+    border: 1px solid #404040;
+    border-radius: 4px;
+    color: #e0e0e0;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-timer:hover {
+    background-color: rgba(224, 224, 224, 0.1);
+}
+
+.btn-reset {
+    border-color: #505050;
+    color: #b0b0b0;
+}
