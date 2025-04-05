@@ -1,5 +1,6 @@
 using Calmy_Focus_App.Models;
 using Calmy_Focus_App.Services;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 
@@ -35,12 +36,17 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         // Redirect here when access is denied.
         options.AccessDeniedPath = "/Account/AccessDenied";
     });
+builder.Services.AddSingleton<IMeditationService, MeditationService>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions {
+    ContentTypeProvider = new FileExtensionContentTypeProvider {
+        Mappings = { [".mp3"] = "audio/mpeg" }
+    }
+});
 
 app.UseRouting();
 

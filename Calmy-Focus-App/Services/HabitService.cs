@@ -10,29 +10,33 @@ namespace Calmy_Focus_App.Services
 {
     public class HabitService : IHabitService
     {
-        private readonly IMongoCollection<Habit> _habitsCollection;
+        private readonly IMongoCollection<Habit> _habits;
+        private readonly IMongoCollection<MeditationSession> _meditationSessions;
 
         public HabitService(IOptions<MongoDBSettings> mongoDBSettings)
         {
             var client = new MongoClient(mongoDBSettings.Value.ConnectionString);
             var database = client.GetDatabase(mongoDBSettings.Value.DatabaseName);
-            _habitsCollection = database.GetCollection<Habit>(mongoDBSettings.Value.HabitsCollectionName);
+            _habits = database.GetCollection<Habit>(mongoDBSettings.Value.HabitsCollectionName);
+            _meditationSessions = database.GetCollection<MeditationSession>("MeditationSessions");
         }
 
         public async Task<List<Habit>> GetAsync() =>
-            await _habitsCollection.Find(_ => true).ToListAsync();
+            await _habits.Find(_ => true).ToListAsync();
+
+        public async Task<Habit?> GetAsync(string id) =>
+            await _habits.Find(h => h.Id == id).FirstOrDefaultAsync();
 
         public async Task CreateAsync(Habit habit) =>
-            await _habitsCollection.InsertOneAsync(habit);
+            await _habits.InsertOneAsync(habit);
 
         public async Task RemoveAsync(string id) =>
-            await _habitsCollection.DeleteOneAsync(h => h.Id == id);
+            await _habits.DeleteOneAsync(h => h.Id == id);
 
         public async Task ToggleDailyCheck(string habitId)
         {
             var today = DateTime.UtcNow.Date;
-            var filter = Builders<Habit>.Filter.Eq(h => h.Id, habitId);
-            var habit = await _habitsCollection.Find(filter).FirstOrDefaultAsync();
+            var habit = await _habits.Find(h => h.Id == habitId).FirstOrDefaultAsync();
 
             if (habit == null) return;
 
@@ -44,9 +48,33 @@ namespace Calmy_Focus_App.Services
                     .Push(h => h.History, today)
                     .Set(h => h.Streak, CalculateCurrentStreak(habit.History.Concat(new[] { today }).ToList()));
 
-            await _habitsCollection.UpdateOneAsync(filter, updateDefinition);
+            await _habits.UpdateOneAsync(
+                Builders<Habit>.Filter.Eq(h => h.Id, habitId),
+                updateDefinition);
         }
 
+        public async Task LogMeditationCompletionAsync(string sessionId)
+        {
+            // Find or create the Meditation habit
+            var habit = await _habits.Find(h => h.Name == "Meditation").FirstOrDefaultAsync();
+            if (habit == null)
+            {
+                habit = new Habit { 
+                    Name = "Meditation",
+                    History = new List<DateTime>(),
+                    Streak = 0
+                };
+                await _habits.InsertOneAsync(habit);
+            }
+
+            // Log completion if not already logged today
+            var today = DateTime.UtcNow.Date;
+            if (!habit.History.Contains(today))
+            {
+                await ToggleDailyCheck(habit.Id);
+            }
+        }
+        
         private int CalculateCurrentStreak(List<DateTime> history)
         {
             if (history.Count == 0) return 0;
