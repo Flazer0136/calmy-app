@@ -3,9 +3,77 @@
     ViewData["Title"] = "Habit Tracker";
 }
 
+<div class="habit-tracker">
+    <div class="habit-header">
+        <div class="current-date">@DateTime.Today.ToString("dddd, MMMM dd")</div>
+        <p class="text-muted">Build your habits one day at a time</p>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form asp-controller="Habits" asp-action="Create" method="post">
+                <div class="input-group">
+                    <input type="text"
+                           name="name"
+                           class="form-control"
+                           placeholder="New habit..."
+                           required>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center text-muted my-5">
+            <i class="fas fa-check-circle fa-3x mb-3"></i>
+            <p>No habits yet. Add your first habit above.</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var habit in Model)
+        {
+            <div class="card habit-card">
+                <div class="card-body">
+                    <div class="habit-content">
+                        <div class="habit-info">
+                            <h5 class="habit-name">@habit.Name</h5>
+                            <div class="streak-counter">
+                                <i class="fas fa-fire"></i> @habit.Streak day streak
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <form asp-controller="Habits" asp-action="ToggleCheck" method="post" class="me-3">
+                                <input type="hidden" name="id" value="@habit.Id" />
+                                <label class="toggle-switch">
+                                    <input type="checkbox"
+                                           class="toggle-input"
+                                           @(habit.History.Contains(DateTime.Today) ? "checked" : "")
+                                           onchange="this.form.submit()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </form>
+                            <form asp-controller="Habits" asp-action="Delete" method="post">
+                                <input type="hidden" name="id" value="@habit.Id" />
+                                <button type="submit" class="btn btn-outline delete-btn">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
 <style>
     .habit-tracker {
-        max-width: 800px;
+        max-width: 700px;
         margin: 0 auto;
     }
 
@@ -20,18 +88,6 @@
         margin-bottom: 0.5rem;
     }
 
-    .habit-card {
-        background: var(--surface-light);
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        transition: transform 0.2s;
-    }
-
-        .habit-card:hover {
-            transform: translateY(-2px);
-        }
-
     .habit-content {
         display: flex;
         justify-content: space-between;
@@ -43,7 +99,6 @@
     }
 
     .habit-name {
-        font-size: 1.2rem;
         margin-bottom: 0.25rem;
     }
 
@@ -71,99 +126,41 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: #333;
+        background: var(--surface-dark);
         transition: .4s;
         border-radius: 34px;
     }
 
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background: var(--text-primary);
-            transition: .4s;
-            border-radius: 50%;
-        }
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background: var(--text-primary);
+        transition: .4s;
+        border-radius: 50%;
+    }
 
     .toggle-input:checked + .toggle-slider {
         background: var(--primary);
     }
 
-        .toggle-input:checked + .toggle-slider:before {
-            transform: translateX(26px);
-        }
+    .toggle-input:checked + .toggle-slider:before {
+        transform: translateX(26px);
+    }
 
     .delete-btn {
         color: #FF4444;
-        margin-left: 1rem;
-        cursor: pointer;
-        transition: opacity 0.2s;
+        background: transparent;
+        border: none;
+        padding: 0.5rem;
+        border-radius: var(--radius-sm);
+        transition: background-color 0.2s;
     }
 
-        .delete-btn:hover {
-            opacity: 0.8;
-        }
-
-    .form-control {
-        color: white;
-        background: #333;
-        border: 1px solid #555;
+    .delete-btn:hover {
+        background-color: rgba(255, 68, 68, 0.1);
     }
-
-        .form-control::placeholder {
-            color: #aaa;
-        }
 </style>
-
-<div class="habit-tracker">
-    <div class="habit-header">
-        <div class="current-date">@DateTime.Today.ToString("dddd, MMMM dd")</div>
-        <small class="text-muted">Build your habits one day at a time</small>
-    </div>
-
-    <form asp-controller="Habits" asp-action="Create" method="post" class="mb-4">
-        <div class="input-group">
-            <input type="text"
-                   name="name"
-                   class="form-control"
-                   placeholder="New habit..."
-                   required>
-            <button type="submit" class="btn btn-primary">Add</button>
-        </div>
-    </form>
-
-    @foreach (var habit in Model)
-    {
-        <div class="habit-card">
-            <div class="habit-content">
-                <div class="habit-info">
-                    <div class="habit-name">@habit.Name</div>
-                    <div class="streak-counter">
-                        <i class="fas fa-fire"></i> @habit.Streak Day Streak
-                    </div>
-                </div>
-                <div class="d-flex align-items-center">
-                    <form asp-controller="Habits" asp-action="ToggleCheck" method="post">
-                        <input type="hidden" name="id" value="@habit.Id" />
-                        <label class="toggle-switch">
-                            <input type="checkbox"
-                                   class="toggle-input"
-                            @(habit.History.Contains(DateTime.Today) ? "checked" : "")
-                                   onchange="this.form.submit()">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </form>
-                    <form asp-controller="Habits" asp-action="Delete" method="post">
-                        <input type="hidden" name="id" value="@habit.Id" />
-                        <button type="submit" class="delete-btn">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    }
-</div>

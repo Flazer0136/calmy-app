@@ -1,30 +1,43 @@
 @{
     ViewData["Title"] = "Login";
+    Layout = null;
 }
 
-<div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1rem; background-color: #121212;">
-    <div style="max-width: 420px; width: 100%; padding: 30px; background-color: #1e1e24; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);">
-        <h2 style="font-size: 1.8rem; font-weight: 300; text-align: center; margin-bottom: 28px; color: #e0e0e0;">Login</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Calmy Focus</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+<div class="auth-container">
+    <div class="auth-card">
+        <h2 class="auth-title">Login</h2>
         <form asp-action="Login" method="post">
-            <div style="margin-bottom: 24px;">
-                <label for="Email" style="display: block; font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; color: #a0a0a0;">Email</label>
+            <div class="form-minimal">
+                <label for="Email" class="form-label">Email</label>
                 <input type="email" id="Email" name="Email" placeholder="yourname@example.com" required 
-                       style="width: 100%; padding: 8px 4px; font-size: 1rem; background-color: transparent; border: none; border-bottom: 1px solid #404040; color: #e0e0e0;" />
+                       class="form-control" />
             </div>
-            <div style="margin-bottom: 24px;">
-                <label for="Password" style="display: block; font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; color: #a0a0a0;">Password</label>
+            <div class="form-minimal">
+                <label for="Password" class="form-label">Password</label>
                 <input type="password" id="Password" name="Password" placeholder="••••••••" required 
-                       style="width: 100%; padding: 8px 4px; font-size: 1rem; background-color: transparent; border: none; border-bottom: 1px solid #404040; color: #e0e0e0;" />
+                       class="form-control" />
             </div>
-            <div style="margin-top: 30px;">
-                <button type="submit" 
-                        style="display: inline-flex; align-items: center; justify-content: center; width: 100%; background-color: #e0e0e0; color: #121212; font-weight: 600; padding: 12px 20px; border-radius: 4px; border: none; cursor: pointer; transition: all 0.3s ease;">
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary w-100">
                     Login
                 </button>
             </div>
-            <div style="text-align: center; margin-top: 20px;">
-                <a href="/Account/Register" style="color: #808080; text-decoration: none; font-size: 0.9rem;">New user? Register here</a>
+            <div class="text-center mt-4">
+                <a href="/Account/Register" class="auth-link">New user? Register here</a>
             </div>
         </form>
     </div>
 </div>
+</body>
+</html>

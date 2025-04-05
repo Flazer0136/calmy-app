@@ -1,55 +1,89 @@
 @model IEnumerable<Calmy_Focus_App.Models.CalendarEvent>
 @{
-    ViewData["Title"] = "Calander Events";
+    ViewData["Title"] = "Calendar";
 }
 
-<div class="container mt-4">
-    <h1>Calendar Events</h1>
-
-    <!-- Add Event Form -->
-    <form id="addEventForm" class="mb-4">
-        <div class="row g-3">
-            <div class="col-md-4">
-                <input type="text" class="form-control" id="eventTitle" placeholder="Event Title" required>
-            </div>
-            <div class="col-md-3">
-                <input type="datetime-local" class="form-control" id="eventStart" required>
-            </div>
-            <div class="col-md-3">
-                <input type="datetime-local" class="form-control" id="eventEnd">
-            </div>
-            <div class="col-md-2">
-                <input type="text" class="form-control" id="eventDescription" placeholder="Description">
-            </div>
-            <div class col-md-2>
-                <input type="checkbox" id="eventAllDay" class="form-check-input">
-                <label for="eventAllDay" class="form-check-label">All Day</label>
-            </div>
-            <div class="col-md-2">
-                <input type="color" class="form-control" id="eventColor" value="#3a87ad">
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">Add Event</button>
-            </div>
-        </div>
-    </form>
-
-    <!-- Events List -->
-    <div class="events-list">
-        @foreach (var evt in Model)
-        {
-            <div class="event-card mb-3 p-3 border rounded" data-id="@evt.Id">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5>@evt.Title</h5>
-                        <p>@evt.Start.ToString("MMM dd, yyyy h:mm tt")</p>
+<div class="calendar-container">
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Add New Event</h5>
+            <form id="addEventForm">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="eventTitle" class="form-label">Event Title</label>
+                            <input type="text" class="form-control" id="eventTitle" placeholder="Event Title" required>
+                        </div>
                     </div>
-                    <button class="btn btn-sm btn-outline-danger delete-event"
-                            data-id="@evt.Id">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="eventStart" class="form-label">Start Time</label>
+                            <input type="datetime-local" class="form-control" id="eventStart" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="eventEnd" class="form-label">End Time</label>
+                            <input type="datetime-local" class="form-control" id="eventEnd">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="eventDescription" class="form-label">Description</label>
+                            <input type="text" class="form-control" id="eventDescription" placeholder="Description">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-check mt-4">
+                            <input type="checkbox" id="eventAllDay" class="form-check-input">
+                            <label for="eventAllDay" class="form-check-label">All Day</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="eventColor" class="form-label">Color</label>
+                            <input type="color" class="form-control" id="eventColor" value="#7C3AED">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary w-100">Add Event</button>
+                        </div>
+                    </div>
                 </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="events-list">
+        @if (!Model.Any())
+        {
+            <div class="text-center text-muted my-5">
+                <i class="fas fa-calendar-day fa-3x mb-3"></i>
+                <p>No events yet. Add your first event above.</p>
             </div>
+        }
+        else
+        {
+            @foreach (var evt in Model)
+            {
+                <div class="card event-card" data-id="@evt.Id">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1">@evt.Title</h5>
+                                <p class="text-muted mb-0">
+                                    <i class="far fa-clock me-1"></i>
+                                    @evt.Start.ToString("MMM dd, yyyy h:mm tt")
+                                </p>
+                            </div>
+                            <button class="btn btn-outline delete-event" data-id="@evt.Id">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
         }
     </div>
 </div>
@@ -64,43 +98,32 @@
                 const eventData = {
                     Title: $('#eventTitle').val(),
                     Start: $('#eventStart').val(),
-                    End: $('#eventEnd').val() || null, // Send null if empty
+                    End: $('#eventEnd').val() || null,
                     Description: $('#eventDescription').val() || "",
                     AllDay: $('#eventAllDay').is(':checked'),
-                    Color: $('#eventColor').val() || "#3a87ad" // Default color
+                    Color: $('#eventColor').val() || "#7C3AED"
                 };
 
-                $.ajax({
-                    url: '/Calendar/Create',
-                    type: 'POST',
-                    contentType: 'application/json', // ← **This is crucial!**
-                    data: JSON.stringify(eventData), // ← Stringify the object
-                    success: function(data) {
-                        location.reload(); // Reload the page to see the new event
-                        // Add the new event to the list
-                        const newEventHtml = `
-                <div class="event-card mb-3 p-3 border rounded" data-id="${data.id}">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h5>${eventData.Title}</h5>
-                            <p>${new Date(eventData.Start).toLocaleString()}</p>
-                        </div>
-                        <div>
-                            <button class="btn btn-sm btn-outline-danger delete-event" data-id="${data.id}">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>`;
+                try {
+                    const response = await fetch('/Calendar/Create', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(eventData)
+                    });
 
-                        $('.events-list').append(newEventHtml);
-                        $('#addEventForm')[0].reset();
-                    },
-                    error: function(xhr) {
-                        console.error("Error:", xhr.responseJSON);
-                        alert('Error adding event: ' + xhr.responseText);
+                    if (response.ok) {
+                        const data = await response.json();
+                        location.reload();
+                    } else {
+                        const errorData = await response.json();
+                        showToast(`Error: ${errorData.error || 'Failed to add event'}`, 'error');
                     }
-                });
+                } catch (error) {
+                    showToast('Connection failed. Please try again.', 'error');
+                    console.error('Error:', error);
+                }
             });
 
             // Delete event
@@ -115,32 +138,32 @@
                     .html('<i class="fas fa-spinner fa-spin"></i>');
 
                 try {
-                    const response = await $.ajax({
-                        url: `/Calendar/Delete/${eventId}`,
-                        type: 'DELETE',
-                        contentType: 'application/json',
-                        dataType: 'json'
+                    const response = await fetch(`/Calendar/Delete/${eventId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
                     });
 
-                    if (response.success) {
-                        $card.fadeOut(400, () => $card.remove());
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success) {
+                            $card.fadeOut(400, () => $card.remove());
+                            showToast('Event deleted successfully', 'success');
+                        } else {
+                            showToast(`Error: ${data.error || 'Unknown error'}`, 'error');
+                            $btn.prop('disabled', false)
+                                .html('<i class="fas fa-trash"></i>');
+                        }
                     } else {
-                        showToast(`Error: ${response.error || 'Unknown error'}`, 'error');
+                        const errorData = await response.json();
+                        showToast(`Error: ${errorData.error || 'Failed to delete event'}`, 'error');
                         $btn.prop('disabled', false)
                             .html('<i class="fas fa-trash"></i>');
                     }
                 } catch (error) {
-                    const errMsg = error.responseJSON?.error ||
-                        error.statusText ||
-                        'Connection failed';
-
-                    console.error('Delete error:', {
-                        status: error.status,
-                        response: error.responseJSON,
-                        eventId: eventId
-                    });
-
-                    showToast(`Delete failed: ${errMsg}`, 'error');
+                    showToast('Connection failed. Please try again.', 'error');
+                    console.error('Error:', error);
                     $btn.prop('disabled', false)
                         .html('<i class="fas fa-trash"></i>');
                 }
@@ -148,21 +171,65 @@
 
             // Helper function for user feedback
             function showToast(message, type = 'success') {
-                const toast = `<div class="toast ${type}">${message}</div>`;
-                $('body').append(toast);
-                setTimeout(() => $('.toast').fadeOut(), 3000);
+                const toastEl = document.createElement('div');
+                toastEl.className = `toast toast-${type}`;
+                toastEl.innerHTML = message;
+                document.body.appendChild(toastEl);
+                
+                setTimeout(() => {
+                    toastEl.classList.add('show');
+                    setTimeout(() => {
+                        toastEl.classList.remove('show');
+                        setTimeout(() => {
+                            toastEl.remove();
+                        }, 300);
+                    }, 3000);
+                }, 100);
             }
         });
     </script>
 
     <style>
-        .event-card {
-            background: var(--surface-light);
-            transition: all 0.2s;
+        .calendar-container {
+            max-width: 900px;
+            margin: 0 auto;
         }
+        
+        .event-card {
+            transition: all 0.2s;
+            margin-bottom: 1rem;
+        }
+        
         .event-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: var(--surface-dark);
+            color: var(--text-primary);
+            border-radius: var(--radius-sm);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .toast-success {
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .toast-error {
+            border-left: 4px solid #F44336;
         }
     </style>
 }

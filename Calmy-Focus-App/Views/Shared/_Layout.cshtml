@@ -4,113 +4,80 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Calmy Focus</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --bg-dark: #121212;
-            --surface-dark: #1E1E1E;
-            --surface-light: #2D2D2D;
-            --primary: #7C3AED;
-            --text-primary: #E0E0E0;
-            --text-secondary: #BBBBBB;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            font-family: 'Inter', system-ui, sans-serif;
-        }
-
-        .navbar {
-            background: var(--surface-dark) !important;
-            border-bottom: 1px solid #333;
-        }
-
-        .navbar-brand, .nav-link {
-            color: var(--text-primary) !important;
-        }
-
-        .nav-link.active {
-            color: var(--primary) !important;
-            font-weight: 600;
-        }
-
-        .container-main {
-            background: var(--surface-dark);
-            border-radius: 12px;
-            padding: 2rem;
-            margin-top: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .card {
-            background: var(--surface-light);
-            border: none;
-            border-radius: 8px;
-        }
-
-        .form-control {
-            background: #2D2D2D;
-            border: 1px solid #333;
-            color: var(--text-primary);
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            border: none;
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-        <a class="navbar-brand" href="#">Calmy Focus</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="logo">Calmy Focus</a>
+            </div>
+            <ul class="sidebar-nav">
                 <li class="nav-item">
-                    <a class="nav-link @(Context.Request.Path.StartsWithSegments("/Home") ? "active" : "")" href="/Home">Notes</a>
+                    <a class="nav-link @(Context.Request.Path.StartsWithSegments("/Home") ? "active" : "")" href="/Home">
+                        <i class="fas fa-sticky-note"></i>
+                        <span>Notes</span>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link @(Context.Request.Path.StartsWithSegments("/Habits") ? "active" : "")" href="/Habits">Habits</a>
+                    <a class="nav-link @(Context.Request.Path.StartsWithSegments("/Habits") ? "active" : "")" href="/Habits">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Habits</span>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link @(Context.Request.Path.StartsWithSegments("/Calendar") ? "active" : "")" href="/Calendar">Calendar</a>
+                    <a class="nav-link @(Context.Request.Path.StartsWithSegments("/Calendar") ? "active" : "")" href="/Calendar">
+                        <i class="fas fa-calendar"></i>
+                        <span>Calendar</span>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link @(Context.Request.Path.StartsWithSegments("/Meditation") ? "active" : "")" href="/Meditation">Meditation Hub</a>
+                    <a class="nav-link @(Context.Request.Path.StartsWithSegments("/Meditation") ? "active" : "")" href="/Meditation">
+                        <i class="fas fa-spa"></i>
+                        <span>Meditation</span>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link @(Context.Request.Path.StartsWithSegments("/Timer") ? "active" : "")" href="/Productivity/timer">Timer</a>
+                    <a class="nav-link @(Context.Request.Path.StartsWithSegments("/Timer") ? "active" : "")" href="/Productivity/timer">
+                        <i class="fas fa-clock"></i>
+                        <span>Timer</span>
+                    </a>
                 </li>
             </ul>
-            <div class="d-flex">
+            <div class="sidebar-footer">
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                    <form asp-controller="Account" asp-action="Logout" method="post">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-outline-light">Logout</button>
+                        <button type="submit" class="btn btn-logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
                     </form>
                 }
                 else
                 {
-                    <a class="btn btn-outline-light" href="/Account/Login">Login</a>
+                    <a class="btn btn-login" href="/Account/Login">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Login</span>
+                    </a>
                 }
             </div>
-        </div>
+        </nav>
+
+        <main class="content-area">
+            <div class="content-header">
+                <h1 class="page-title">@ViewData["Title"]</h1>
+            </div>
+            <div class="content-body">
+                @RenderBody()
+            </div>
+        </main>
     </div>
-</nav>
 
-<div class="container">
-    <main role="main" class="container-main">
-        @RenderBody()
-    </main>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-@await RenderSectionAsync("Scripts", required: false)
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
