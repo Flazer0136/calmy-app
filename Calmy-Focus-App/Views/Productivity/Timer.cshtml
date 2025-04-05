@@ -1,0 +1,55 @@
+@{
+    ViewData["Title"] = "Productivity Timer";
+}
+
+<div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1rem; background-color: #121212;">
+    <div style="max-width: 420px; width: 100%; padding: 30px; background-color: #1e1e24; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);">
+        <h2 style="font-size: 1.8rem; font-weight: 300; text-align: center; margin-bottom: 28px; color: #e0e0e0;">Productivity Timer</h2>
+        <div id="timer" style="font-size: 3rem; text-align: center; font-weight: 300; margin: 1.5rem 0; color: #e0e0e0;">00:00:00</div>
+        <div style="display: flex; justify-content: center; gap: 12px; margin-top: 20px;">
+            <button id="playBtn" style="padding: 10px 0; width: 100px; background-color: transparent; border: 1px solid #404040; border-radius: 4px; color: #e0e0e0; font-weight: 500;">Play</button>
+            <button id="pauseBtn" style="padding: 10px 0; width: 100px; background-color: transparent; border: 1px solid #404040; border-radius: 4px; color: #e0e0e0; font-weight: 500;">Pause</button>
+            <button id="deleteBtn" style="padding: 10px 0; width: 100px; background-color: transparent; border: 1px solid #505050; border-radius: 4px; color: #b0b0b0; font-weight: 500;">Reset</button>
+        </div>
+    </div>
+</div>
+
+<script>
+  let timerInterval;
+  let totalSeconds = 0;
+
+  function formatTime(seconds) {
+    const hours = String(Math.floor(seconds / 3600)).padStart(2, "0");
+    const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+    const secs = String(seconds % 60).padStart(2, "0");
+    return hours + ":" + minutes + ":" + secs;
+  }
+
+  // Play: Starts or resumes the timer.
+  document.getElementById("playBtn").addEventListener("click", function () {
+    if (!timerInterval) {
+      timerInterval = setInterval(function () {
+        totalSeconds++;
+        document.getElementById("timer").innerText = formatTime(totalSeconds);
+      }, 1000);
+    }
+  });
+
+  // Pause: Stops the timer without resetting.
+  document.getElementById("pauseBtn").addEventListener("click", function () {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+  });
+
+  // Reset: Stops the timer and resets the counter.
+  document.getElementById("deleteBtn").addEventListener("click", function () {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+    totalSeconds = 0;
+    document.getElementById("timer").innerText = formatTime(totalSeconds);
+  });
+</script>
