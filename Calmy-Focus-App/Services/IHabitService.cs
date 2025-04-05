@@ -10,5 +10,6 @@ namespace Calmy_Focus_App.Services
         Task CreateAsync(Habit habit);
         Task RemoveAsync(string id);
         Task ToggleDailyCheck(string habitId);
+        Task LogMeditationCompletionAsync(string sessionId); 
     }
 }

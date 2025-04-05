@@ -16,6 +16,7 @@ builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("Mo
 builder.Services.AddSingleton<INotesService, NotesService>();
 builder.Services.AddSingleton<IHabitService, HabitService>();
 builder.Services.AddSingleton<ICalendarService, CalendarService>();
+builder.Services.AddSingleton<IMeditationService, MeditationService>();
 
 var app = builder.Build();
 
