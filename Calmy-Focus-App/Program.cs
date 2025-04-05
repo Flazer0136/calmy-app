@@ -4,8 +4,6 @@ using Calmy_Focus_App.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
-
-builder.Services.AddLogging(); // This enables ILogger
 builder.Services.AddControllersWithViews();
 builder.Services.AddSwaggerGen();
 
@@ -15,7 +13,6 @@ builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("Mo
 // Register your services
 builder.Services.AddSingleton<INotesService, NotesService>();
 builder.Services.AddSingleton<IHabitService, HabitService>();
-builder.Services.AddSingleton<ICalendarService, CalendarService>();
 
 var app = builder.Build();
 
