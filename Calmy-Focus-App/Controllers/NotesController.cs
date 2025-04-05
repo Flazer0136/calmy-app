@@ -1,9 +1,12 @@
 ﻿using Calmy_Focus_App.Models;
 using Calmy_Focus_App.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Calmy_Focus_App.Controllers
 {
+    [Authorize]                // Protects all endpoints in this controller.
     [Route("api/[controller]")]
     [ApiController]
     public class NotesController : ControllerBase
@@ -15,6 +18,7 @@ namespace Calmy_Focus_App.Controllers
             _notesService = notesService;
         }
 
+        // GET: api/Notes
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -22,6 +26,7 @@ namespace Calmy_Focus_App.Controllers
             return Ok(notes);
         }
 
+        // GET: api/Notes/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(string id)
         {
@@ -29,6 +34,7 @@ namespace Calmy_Focus_App.Controllers
             return note == null ? NotFound() : Ok(note);
         }
 
+        // POST: api/Notes
         [HttpPost]
         public async Task<IActionResult> Post(Note note)
         {
@@ -36,6 +42,7 @@ namespace Calmy_Focus_App.Controllers
             return CreatedAtAction(nameof(Get), new { id = note.Id }, note);
         }
 
+        // PUT: api/Notes/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, Note note)
         {
@@ -43,6 +50,7 @@ namespace Calmy_Focus_App.Controllers
             return NoContent();
         }
 
+        // DELETE: api/Notes/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {

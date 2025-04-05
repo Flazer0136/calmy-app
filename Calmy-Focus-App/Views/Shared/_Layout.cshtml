@@ -78,6 +78,9 @@
                         <a class="nav-link @(Context.Request.Path.StartsWithSegments("/Habits") ? "active" : "")" href="/Habits">Habits</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link @(Context.Request.Path.StartsWithSegments("/Calendar") ? "active" : "")" href="/Calendar">Calendar</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link @(Context.Request.Path.StartsWithSegments("/Meditation") ? "active" : "")" href="/Meditation">Meditation Hub</a>
                     </li>
                 </ul>

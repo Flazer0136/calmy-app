@@ -1,13 +1,16 @@
 // Controllers/CalendarController.cs
 using Calmy_Focus_App.Models;
 using Calmy_Focus_App.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Text.Json;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Calmy_Focus_App.Controllers
 {
+    [Authorize]  // This protects all actions in the controller.
     public class CalendarController : Controller
     {
         private readonly ICalendarService _calendarService;
@@ -15,18 +18,18 @@ namespace Calmy_Focus_App.Controllers
 
         public CalendarController(
             ICalendarService calendarService,
-            ILogger<CalendarController> logger) // Add this parameter
+            ILogger<CalendarController> logger)
         {
             _calendarService = calendarService;
-            _logger = logger; // Store the logger
+            _logger = logger;
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CalendarEvent calendarEvent)
         {
             _logger.LogInformation("Creating calendar event");
             ModelState.Remove("Id");
-        
+
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Invalid model state");
@@ -36,15 +39,17 @@ namespace Calmy_Focus_App.Controllers
             try
             {
                 await _calendarService.CreateAsync(calendarEvent);
-                return Json(new { 
-                    success = true, 
+                return Json(new
+                {
+                    success = true,
                     id = calendarEvent.Id
                 });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Database error creating event");
-                return StatusCode(500, new { 
+                return StatusCode(500, new
+                {
                     success = false,
                     error = ex.Message
                 });

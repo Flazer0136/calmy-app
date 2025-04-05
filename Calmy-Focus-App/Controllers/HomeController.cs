@@ -1,9 +1,13 @@
 using Calmy_Focus_App.Models;
 using Calmy_Focus_App.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
-namespace Calmy_Focus_App.Controllers   
+namespace Calmy_Focus_App.Controllers
 {
+    [Authorize]  // All actions in this controller require authentication.
     public class HomeController : Controller
     {
         private readonly INotesService _notesService;
