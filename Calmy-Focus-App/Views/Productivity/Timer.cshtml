@@ -2,17 +2,75 @@
     ViewData["Title"] = "Productivity Timer";
 }
 
-<div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1rem; background-color: #121212;">
-    <div style="max-width: 420px; width: 100%; padding: 30px; background-color: #1e1e24; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);">
-        <h2 style="font-size: 1.8rem; font-weight: 300; text-align: center; margin-bottom: 28px; color: #e0e0e0;">Productivity Timer</h2>
-        <div id="timer" style="font-size: 3rem; text-align: center; font-weight: 300; margin: 1.5rem 0; color: #e0e0e0;">00:00:00</div>
-        <div style="display: flex; justify-content: center; gap: 12px; margin-top: 20px;">
-            <button id="playBtn" style="padding: 10px 0; width: 100px; background-color: transparent; border: 1px solid #404040; border-radius: 4px; color: #e0e0e0; font-weight: 500;">Play</button>
-            <button id="pauseBtn" style="padding: 10px 0; width: 100px; background-color: transparent; border: 1px solid #404040; border-radius: 4px; color: #e0e0e0; font-weight: 500;">Pause</button>
-            <button id="deleteBtn" style="padding: 10px 0; width: 100px; background-color: transparent; border: 1px solid #505050; border-radius: 4px; color: #b0b0b0; font-weight: 500;">Reset</button>
+<div class="timer-container">
+    <div class="card">
+        <div class="card-body text-center">
+            <h5 class="card-title mb-4">Focus Timer</h5>
+            
+            <div id="timer">00:00:00</div>
+            
+            <div class="timer-controls">
+                <button id="playBtn" class="btn btn-outline btn-timer">
+                    <i class="fas fa-play me-2"></i>Start
+                </button>
+                <button id="pauseBtn" class="btn btn-outline btn-timer">
+                    <i class="fas fa-pause me-2"></i>Pause
+                </button>
+                <button id="deleteBtn" class="btn btn-outline btn-reset">
+                    <i class="fas fa-redo me-2"></i>Reset
+                </button>
+            </div>
+            
+            <div class="timer-tips mt-5">
+                <h6 class="text-muted mb-3">Productivity Tips</h6>
+                <ul class="text-start text-muted">
+                    <li>Try the Pomodoro Technique: 25 minutes of focus, then a 5-minute break</li>
+                    <li>Remove distractions from your environment before starting</li>
+                    <li>Set a clear goal for each focus session</li>
+                    <li>Stay hydrated and take short breaks to maintain energy</li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    .timer-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    #timer {
+        font-size: 4rem;
+        font-weight: 300;
+        margin: 2rem 0;
+        color: var(--text-primary);
+    }
+    
+    .timer-controls {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .btn-timer {
+        min-width: 100px;
+    }
+    
+    .timer-tips {
+        border-top: 1px solid var(--border-color);
+        padding-top: 1.5rem;
+        margin-top: 1.5rem;
+    }
+    
+    .timer-tips ul {
+        padding-left: 1.5rem;
+    }
+    
+    .timer-tips li {
+        margin-bottom: 0.5rem;
+    }
+</style>
 
 <script>
   let timerInterval;
@@ -32,6 +90,12 @@
         totalSeconds++;
         document.getElementById("timer").innerText = formatTime(totalSeconds);
       }, 1000);
+      
+      // Update button states
+      this.classList.add('btn-primary');
+      this.classList.remove('btn-outline');
+      document.getElementById("pauseBtn").classList.remove('btn-primary');
+      document.getElementById("pauseBtn").classList.add('btn-outline');
     }
   });
 
@@ -40,6 +104,12 @@
     if (timerInterval) {
       clearInterval(timerInterval);
       timerInterval = null;
+      
+      // Update button states
+      this.classList.add('btn-primary');
+      this.classList.remove('btn-outline');
+      document.getElementById("playBtn").classList.remove('btn-primary');
+      document.getElementById("playBtn").classList.add('btn-outline');
     }
   });
 
@@ -51,5 +121,11 @@
     }
     totalSeconds = 0;
     document.getElementById("timer").innerText = formatTime(totalSeconds);
+    
+    // Reset button states
+    document.getElementById("playBtn").classList.remove('btn-primary');
+    document.getElementById("playBtn").classList.add('btn-outline');
+    document.getElementById("pauseBtn").classList.remove('btn-primary');
+    document.getElementById("pauseBtn").classList.add('btn-outline');
   });
 </script>

@@ -1,97 +1,75 @@
 ﻿@model IEnumerable<Calmy_Focus_App.Models.Note>
+@{
+    ViewData["Title"] = "Notes";
+}
 
-<style>
-    .notes-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 1.5rem;
-        margin-top: 2rem;
-    }
-
-    .note-card {
-        background: var(--surface-light);
-        border-radius: 8px;
-        padding: 1.5rem;
-        transition: transform 0.2s;
-        color: white; /* Ensure text in the card is white */
-    }
-
-        .note-card:hover {
-            transform: translateY(-3px);
-        }
-
-    .note-actions {
-        margin-top: 1rem;
-        display: flex;
-        gap: 1rem;
-        justify-content: flex-end;
-    }
-
-    .edit-modal .modal-content {
-        background: var(--surface-dark);
-        color: var(--text-primary);
-    }
-
-    .form-control {
-        color: white; 
-        background: #333; 
-        border: 1px solid #555;
-    }
-
-        .form-control::placeholder {
-            color: #aaa; 
-        }
-
-    .note-card h5,
-    .note-card p {
-        color: white !important; 
-    }
-</style>
-
-<div class="container-main">
-    <h2>Notes</h2>
-
-    <form asp-controller="Home" asp-action="AddNote" method="post" class="mb-4">
-        <div class="row g-3">
-            <div class="col-md-6">
-                <input type="text" class="form-control" name="Title" placeholder="Title" required>
-            </div>
-            <div class="col-md-6">
-                <input type="text" class="form-control" name="Content" placeholder="Content" required>
-            </div>
-            <div class="col-12">
-                <button type="submit" class="btn btn-primary">Add Note</button>
-            </div>
-        </div>
-    </form>
-
-    <div class="notes-grid">
-        @foreach (var note in Model)
-        {
-            <div class="note-card">
-                <h5>@note.Title</h5>
-                <p class="text-muted">@note.Content</p>
-                <div class="note-actions">
-                    <button class="btn btn-link text-warning edit-btn"
-                            data-note-id="@note.Id"
-                            data-bs-toggle="modal"
-                            data-bs-target="#editModal">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <form asp-controller="Home" asp-action="DeleteNote" method="post">
-                        <input type="hidden" name="id" value="@note.Id" />
-                        <button type="submit" class="btn btn-link text-danger">
-                            <i class="fas fa-trash"></i>
+<div class="notes-container">
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Add New Note</h5>
+            <form asp-controller="Home" asp-action="AddNote" method="post">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="Title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="Title" name="Title" placeholder="Note title" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="Content" class="form-label">Content</label>
+                            <input type="text" class="form-control" id="Content" name="Content" placeholder="Note content" required>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Add Note
                         </button>
-                    </form>
+                    </div>
                 </div>
-            </div>
-        }
+            </form>
+        </div>
     </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center text-muted my-5">
+            <i class="fas fa-sticky-note fa-3x mb-3"></i>
+            <p>No notes yet. Add your first note above.</p>
+        </div>
+    }
+    else
+    {
+        <div class="notes-grid">
+            @foreach (var note in Model)
+            {
+                <div class="card note-card">
+                    <div class="card-body">
+                        <h5 class="card-title">@note.Title</h5>
+                        <p class="text-muted">@note.Content</p>
+                        <div class="note-actions">
+                            <button class="btn btn-outline edit-btn"
+                                    data-note-id="@note.Id"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editModal">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <form asp-controller="Home" asp-action="DeleteNote" method="post">
+                                <input type="hidden" name="id" value="@note.Id" />
+                                <button type="submit" class="btn btn-outline delete-btn">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 </div>
 
 <!-- Edit Modal -->
-<div class="modal fade edit-modal" id="editModal" tabindex="-1">
+<div class="modal fade" id="editModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -102,15 +80,15 @@
                 <form id="editForm" method="post">
                     <input type="hidden" id="editNoteId" name="Id">
                     <div class="mb-3">
-                        <label class="form-label">Title</label>
+                        <label for="editTitle" class="form-label">Title</label>
                         <input type="text" class="form-control" name="Title" id="editTitle" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Content</label>
+                        <label for="editContent" class="form-label">Content</label>
                         <input type="text" class="form-control" name="Content" id="editContent" required>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                     </div>
                 </form>
@@ -118,6 +96,42 @@
         </div>
     </div>
 </div>
+
+<style>
+    .notes-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .notes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .note-card {
+        transition: transform 0.2s;
+    }
+
+    .note-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .note-actions {
+        margin-top: 1rem;
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+    
+    .edit-btn {
+        color: var(--warning);
+    }
+    
+    .delete-btn {
+        color: var(--danger);
+    }
+</style>
 
 @section Scripts {
     <script>

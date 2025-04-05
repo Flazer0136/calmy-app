@@ -1,1 +1,192 @@
-j
+@model Calmy_Focus_App.Models.MeditationViewModel
+@{
+    ViewData["Title"] = "Meditation Hub";
+}
+
+<div class="meditation-container">
+    <!-- Session Creation Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Start New Session</h5>
+            <form asp-action="StartSession" method="post">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Track</label>
+                            <select name="trackName" class="form-select">
+                                @foreach (var track in Model.AvailableTracks)
+                                {
+                                    <option value="@track">@track</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Duration (minutes)</label>
+                            <input type="number" name="durationMinutes" class="form-control" min="1" max="120" value="10">
+                        </div>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-play me-2"></i>Start
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Current Session Display -->
+    @if (Model.CurrentSession != null)
+    {
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title mb-3">Current Session</h5>
+                        <p class="mb-1"><strong>Track:</strong> @Model.CurrentSession.TrackName</p>
+                        <p class="mb-1"><strong>Started:</strong> @Model.CurrentSession.StartTime.ToString("g")</p>
+                        <p class="mb-0"><strong>Duration:</strong> @Model.CurrentSession.DurationMinutes minutes</p>
+                    </div>
+                    <form asp-action="CompleteSession" method="post">
+                        <input type="hidden" name="sessionId" value="@Model.CurrentSession.Id" />
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check me-2"></i>Complete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Session History -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title mb-4">Your Meditation History</h5>
+            
+            @if (!Model.Sessions.Any())
+            {
+                <div class="text-center text-muted my-5">
+                    <i class="fas fa-spa fa-3x mb-3"></i>
+                    <p>No meditation sessions yet. Start your first session above.</p>
+                </div>
+            }
+            else
+            {
+                <div class="list-group">
+                    @foreach (var session in Model.Sessions)
+                    {
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">@session.TrackName</h6>
+                                    <p class="mb-1 text-muted">@session.StartTime.ToString("g")</p>
+                                </div>
+                                <div class="d-flex flex-column align-items-end">
+                                    <span class="badge bg-primary mb-1">@session.DurationMinutes min</span>
+                                    <small class="@(session.Completed ? "text-success" : "text-warning")">
+                                        @(session.Completed ? "Completed" : "In Progress")
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .meditation-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .badge {
+        font-weight: 500;
+        padding: 0.35em 0.65em;
+    }
+    
+    .bg-primary {
+        background-color: var(--primary) !important;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // Player functionality
+        let currentSessionId = null;
+        
+        $('#durationSlider').on('input', function() {
+            $('#durationDisplay').text(`${this.value} mins`);
+        });
+        
+        $('#startButton').click(async function() {
+            const track = $('#trackSelect').val();
+            const duration = $('#durationSlider').val();
+            
+            try {
+                const response = await fetch('/api/meditation/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ trackName: track, durationMinutes: duration })
+                });
+                
+                if (response.ok) {
+                    const session = await response.json();
+                    currentSessionId = session.id;
+                    
+                    $('#currentTrack').text(track);
+                    $('#timeRemaining').text(`${duration}:00`);
+                    $('#playerUi').show();
+                    
+                    // Start timer logic here...
+                    showToast('Meditation session started', 'success');
+                } else {
+                    showToast('Failed to start session', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Connection failed', 'error');
+            }
+        });
+        
+        $('#completeButton').click(async function() {
+            try {
+                const response = await fetch(`/api/meditation/complete/${currentSessionId}`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    showToast('Session completed successfully', 'success');
+                    location.reload();
+                } else {
+                    showToast('Failed to complete session', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Connection failed', 'error');
+            }
+        });
+        
+        // Helper function for user feedback
+        function showToast(message, type = 'success') {
+            const toastEl = document.createElement('div');
+            toastEl.className = `toast toast-${type}`;
+            toastEl.innerHTML = message;
+            document.body.appendChild(toastEl);
+            
+            setTimeout(() => {
+                toastEl.classList.add('show');
+                setTimeout(() => {
+                    toastEl.classList.remove('show');
+                    setTimeout(() => {
+                        toastEl.remove();
+                    }, 300);
+                }, 3000);
+            }, 100);
+        }
+    </script>
+}
