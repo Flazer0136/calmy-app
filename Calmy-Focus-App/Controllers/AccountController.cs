@@ -13,6 +13,7 @@ namespace Calmy_Focus_App.Controllers
 {
     public class AccountController : Controller
     {
+        [Authorize]
         private readonly IUserService _userService;
         private readonly IPasswordHasher<User> _passwordHasher;
 
