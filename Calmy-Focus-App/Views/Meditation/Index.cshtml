@@ -107,12 +107,30 @@
             location.reload(); // Refresh to show in habit tracker
         });
     </script>
+    <script src="~/js/meditationPlayer.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const player = window.meditationPlayer;
+
+            // Play when session starts
+            $('#startButton').click(function() {
+                const trackName = $('#trackSelect').val();
+                player.play(trackName);
+            });
+
+            // Stop when session completes
+            $('#completeButton').click(function() {
+                player.stop();
+            });
+        });
+    </script>
     
     <style>
         .meditation-hub {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
+            color: white;
         }
         .player-container {
             background: var(--surface-light);

@@ -1,5 +1,6 @@
 using Calmy_Focus_App.Models;
 using Calmy_Focus_App.Services;
+using Microsoft.AspNetCore.StaticFiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +22,11 @@ builder.Services.AddSingleton<IMeditationService, MeditationService>();
 var app = builder.Build();
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions {
+    ContentTypeProvider = new FileExtensionContentTypeProvider {
+        Mappings = { [".mp3"] = "audio/mpeg" }
+    }
+});
 app.UseRouting();
 app.UseAuthorization();
 

@@ -47,7 +47,7 @@ public class MeditationService : IMeditationService
     {
         var update = Builders<MeditationSession>.Update
             .Set(s => s.Completed, true)
-            .Set(s => s.EndTime, DateTime.Now); // Now using the EndTime property
+            .Set(s => s.EndTime, DateTime.Now);
 
         await _sessions.UpdateOneAsync(
             Builders<MeditationSession>.Filter.Eq(s => s.Id, sessionId),
@@ -56,7 +56,7 @@ public class MeditationService : IMeditationService
         await _habitService.LogMeditationCompletionAsync(sessionId);
     }
     
-    public async Task DeleteSessionAsync(string id) // Renamed from RemoveAsync
+    public async Task DeleteSessionAsync(string id)
     {
         await _sessions.DeleteOneAsync(s => s.Id == id);
     }
